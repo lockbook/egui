@@ -27,7 +27,6 @@ impl FileDrops {
         &mut self,
         event_loop: &dyn ActiveEventLoop,
         event: &WindowEvent,
-        bounded: bool,
     ) -> Option<(Vec<PathBuf>, Option<winit::dpi::PhysicalPosition<f64>>)> {
         match event {
             WindowEvent::DragEntered { id, position } => {
@@ -62,19 +61,7 @@ impl FileDrops {
                 if proposed_action.is_some_and(|action| action != DndAction::Copy) {
                     self.pending.remove(id);
                 } else if let Some(pending) = self.pending.get_mut(id) {
-                    let request = if bounded {
-                        event_loop.fetch_data_transfer_with_limits(
-                            *id,
-                            &TypeHint::UriList,
-                            winit::data_transfer::DataTransferLimits {
-                                max_bytes: 1024 * 1024,
-                                timeout: core::time::Duration::from_secs(10),
-                            },
-                        )
-                    } else {
-                        event_loop.fetch_data_transfer(*id, &TypeHint::UriList)
-                    };
-                    match request {
+                    match event_loop.fetch_data_transfer(*id, &TypeHint::UriList) {
                         Ok(serial) => pending.serial = Some(serial),
                         Err(_) => {
                             self.pending.remove(id);

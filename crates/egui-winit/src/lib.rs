@@ -624,9 +624,7 @@ impl State {
                 }
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    if let Some((paths, position)) =
-                        self.file_drops.on_event(event_loop, event, self.is_wayland)
-                    {
+                    if let Some((paths, position)) = self.file_drops.on_event(event_loop, event) {
                         if let Some(position) = position {
                             self.on_cursor_moved(window, position);
                         }

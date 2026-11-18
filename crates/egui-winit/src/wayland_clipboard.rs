@@ -33,14 +33,7 @@ impl Clipboard {
         {
             return false;
         }
-        match event_loop.fetch_data_transfer_with_limits(
-            id,
-            &TypeHint::Plaintext,
-            winit::data_transfer::DataTransferLimits {
-                max_bytes: 1024 * 1024,
-                timeout: core::time::Duration::from_secs(10),
-            },
-        ) {
+        match event_loop.fetch_data_transfer(id, &TypeHint::Plaintext) {
             Ok(serial) => {
                 self.pending.insert(serial, (id, primary_at));
                 true
